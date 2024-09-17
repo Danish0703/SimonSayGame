@@ -5,12 +5,18 @@ document.addEventListener("DOMContentLoaded", function() {
 
     let gameSeq = [];
     let userSeq = [];
-    let btns = ["green", "red", "yellow", "purple"]; // Updated to include 'purple'
+    let btns = ["green", "red", "yellow", "purple"];
 
     let started = false;
     let level = 0;
 
-    document.addEventListener("keypress", function() {
+    // Function to detect if the user is on a mobile device
+    function isMobileDevice() {
+        return /Mobi|Android/i.test(navigator.userAgent);
+    }
+
+    // Function to start the game
+    function startGame() {
         if (!started) {
             console.log("Game started");
             started = true;
@@ -19,7 +25,16 @@ document.addEventListener("DOMContentLoaded", function() {
             gameSeq = [];
             levelup();
         }
-    });
+    }
+
+    // Detecting mobile or desktop and assigning the appropriate event to start the game
+    if (isMobileDevice()) {
+        // If it's a mobile device, use touchstart event
+        h2.addEventListener("touchstart", startGame);
+    } else {
+        // For desktop users, use keypress event
+        document.addEventListener("keypress", startGame);
+    }
 
     // Flash effect for the game sequence
     function gameFlash(btn) {
@@ -44,7 +59,6 @@ document.addEventListener("DOMContentLoaded", function() {
         h2.innerText = `Level ${level}`;
         score.innerText = `Score: ${level - 1}`; // Update score
         
-        // Random button selection for game sequence
         let randIdx = Math.floor(Math.random() * 4);
         let randColor = btns[randIdx];
         let btn = document.querySelector(`.${randColor}`);
@@ -52,7 +66,6 @@ document.addEventListener("DOMContentLoaded", function() {
         gameSeq.push(randColor);
         console.log("Game sequence:", gameSeq);
         
-        // Flash each button in the sequence
         setTimeout(() => gameFlash(btn), 500);
     }
 
@@ -64,14 +77,12 @@ document.addEventListener("DOMContentLoaded", function() {
         
         if (userSeq[idx] === gameSeq[idx]) {
             if (userSeq.length === gameSeq.length) {
-                setTimeout(() => levelup(), 1000); // Move to the next level after a delay
+                setTimeout(() => levelup(), 1000);
             }
         } else {
-            // Display game over message
             h2.innerText = "Game Over! Press any key to restart"; 
             console.log("Game Over: Sequences do not match!");
             
-            // Delay the reset so the game over message is visible for 2 seconds
             setTimeout(() => resetGame(), 2000);
         }
     }
